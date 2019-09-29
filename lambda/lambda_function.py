@@ -34,7 +34,7 @@ def scraping(url):
             table.append([
                     f"'{td_elms[0].string}",
                     f"=datevalue(\"{td_elms[1].string}\")",
-                    td_elms[2].string,
+                    "".join(list(td_elms[2].strings)),
                     td_elms[3].a and td_elms[3].string.split(" ")[1],
                     td_elms[3].a and td_elms[3].a.get("href")
             ])
