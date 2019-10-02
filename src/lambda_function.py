@@ -47,11 +47,10 @@ def sheets_service():
     return build("sheets", "v4", credentials=creds)
 
 
-def add_sheet(service, spreadsheet_id, name):
-    range_ = f"{name}!A1:A1"
-
+def write_table(service, spreadsheet_id, sheet_name, table):
     sheet = service.spreadsheets()
 
+    range_ = f"{sheet_name}!A1:F{len(table) + 1}"
     try:
         result = sheet.values().get(spreadsheetId=spreadsheet_id, range=range_).execute()
     except:
@@ -59,7 +58,7 @@ def add_sheet(service, spreadsheet_id, name):
             "requests": {
                 "addSheet": {
                     "properties": {
-                        "title": name
+                        "title": sheet_name
                     }
                 }
             }
@@ -67,11 +66,6 @@ def add_sheet(service, spreadsheet_id, name):
         request = sheet.batchUpdate(spreadsheetId=spreadsheet_id, body=body)
         response = request.execute()
 
-
-def write_table(service, spreadsheet_id, sheet_name, table):
-    add_sheet(service, spreadsheet_id, sheet_name)
-
-    range_ = f"{sheet_name}!A1:F{len(table) + 1}"
     body = { "values": table }
     option = "USER_ENTERED"
     request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=range_, valueInputOption=option, body=body)
@@ -85,6 +79,4 @@ def lambda_handler(event, context):
     for version, table in tables.items():
         write_table(service, SPREADSHEET_ID, version, table)
 
-    return 'Test'
-
-lambda_handler(None, None)
+    return True
