@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import re
+import time
 import json
 from urllib import request
 from bs4 import BeautifulSoup
@@ -77,5 +78,6 @@ def lambda_handler(event, context):
     service = sheets_service()
     for version, table in tables.items():
         write_table(service, SPREADSHEET_ID, version, table)
+        time.sleep(30)
 
     return
