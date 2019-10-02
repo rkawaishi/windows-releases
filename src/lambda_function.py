@@ -52,7 +52,7 @@ def write_table(service, spreadsheet_id, sheet_name, table):
 
     range_ = f"{sheet_name}!A1:F{len(table) + 1}"
     try:
-        result = sheet.values().get(spreadsheetId=spreadsheet_id, range=range_).execute()
+        sheet.values().get(spreadsheetId=spreadsheet_id, range=range_).execute()
     except:
         body = {
             "requests": {
@@ -63,13 +63,12 @@ def write_table(service, spreadsheet_id, sheet_name, table):
                 }
             }
         }
-        request = sheet.batchUpdate(spreadsheetId=spreadsheet_id, body=body)
-        response = request.execute()
+        sheet.batchUpdate(spreadsheetId=spreadsheet_id, body=body).execute()
 
-    body = { "values": table }
+    body = {"values": table}
     option = "USER_ENTERED"
     request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=range_, valueInputOption=option, body=body)
-    response = request.execute()
+    request.execute()
 
 
 def lambda_handler(event, context):
@@ -79,4 +78,4 @@ def lambda_handler(event, context):
     for version, table in tables.items():
         write_table(service, SPREADSHEET_ID, version, table)
 
-    return True
+    return
