@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Windows Releases
+Resources:
+  WindowsReleasesFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: windows-releases
+      Handler: lambda_function.lambda_handler
+      Role: [YOUR ROLE ARN]
+      Runtime: python3.7
+      Timeout: 300
+      Code: src
+  LambdaScheduleEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'schedule event for lambda of windows-releases'
+      ScheduleExpression: 'cron(0 1 * * ? *)'
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt WindowsReleasesFunction.Arn
+          Id: ScheduleEvent1Target
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref WindowsReleasesFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt LambdaScheduleEvent.Arn
